@@ -70,7 +70,7 @@ class Plugin(Base):
     preview = True
     preview_width = 280
     live = 5
-    hints = [Hint("↵", "run"), Hint("⌫", "back (files)")]
+    hints = [Hint("Enter", "run"), Hint("Backspace", "back (files)")]
     empty_text = "No phone found: open KDE Connect on it (same network)"
 
     def __init__(self, vyom, conf):

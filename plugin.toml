@@ -1,7 +1,7 @@
 name = "doot"
 title = "Phone"
 description = "Your phone through KDE Connect: battery and signal at a glance, send files and the clipboard, ring, ping, browse, pair."
-version = "0.1.0"
+version = "0.1.1"
 vyom = "0.2"
 icon = "󰄜"
 color = "green"
