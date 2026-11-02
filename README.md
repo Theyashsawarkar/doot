@@ -22,6 +22,11 @@
 
 <!-- No screenshot: phone shows personal data (your own phone). -->
 
+<p align="center">
+  <img alt="doot: the paired phone's actions (send clipboard, send a file, ring, browse, ping, unpair), its battery and network, and a tablet ready to pair" src="assets/screenshots/doot.png" width="100%">
+</p>
+<p align="center"><sub>Screenshots use a made-up demo phone.</sub></p>
+
 > *Doot* (दूत) is Sanskrit for "messenger": the messenger that carries files, the clipboard and pings to your phone.
 
 doot is your phone, through KDE Connect for [Vyom](https://github.com/Theyashsawarkar/vyom): one keyboard-driven panel that opens instantly, with live data, a preview and a key for everything. It runs on any compositor with the layer-shell protocol (sway, Hyprland, river, niri, Wayfire, labwc…). In [Vayu](https://github.com/Theyashsawarkar/vayu), the desktop it was built for, it replaces phone-picker.py.
