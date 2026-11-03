@@ -6,6 +6,15 @@
   </picture>
 </p>
 
+<!-- identity -->
+<p align="center">
+  <b>मनोजवं मारुततुल्यवेगं जितेन्द्रियं बुद्धिमतां वरिष्ठम् ।<br>
+  वातात्मजं वानरयूथमुख्यं श्रीरामदूतं शरणं प्रपद्ये ॥</b><br>
+  <i>Swift as thought, fast as the wind: I turn to Rāma's messenger.</i><br>
+  <sub>Rāmarakṣā Stotra 33</sub>
+</p>
+<!-- /identity -->
+
 <p align="center">
   <b>Your phone through KDE Connect: battery and signal at a glance, send files and the clipboard, ring, ping, browse, pair.</b><br>
   Your phone, through KDE Connect. A tool for <a href="https://github.com/Theyashsawarkar/vyom">Vyom</a>, keyboard-driven panels for Wayland.

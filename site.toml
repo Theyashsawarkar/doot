@@ -6,3 +6,6 @@ tagline = "Your phone through KDE Connect: battery and signal at a glance, send 
 color = "green"
 kind = "a Vyom tool"
 logo = "assets/logo.svg"
+shloka = "मनोजवं मारुततुल्यवेगं जितेन्द्रियं बुद्धिमतां वरिष्ठम् ।\nवातात्मजं वानरयूथमुख्यं श्रीरामदूतं शरणं प्रपद्ये ॥"
+shloka_meaning = "Swift as thought, fast as the wind: I turn to Rāma's messenger."
+shloka_source = "Rāmarakṣā Stotra 33"
