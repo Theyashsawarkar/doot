@@ -24,7 +24,7 @@
   <a href="https://github.com/Theyashsawarkar/doot/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Theyashsawarkar/doot/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/Theyashsawarkar/doot/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Theyashsawarkar/doot?color=cba6f7&label=release"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-f5e0dc"></a>
-  <a href="https://github.com/Theyashsawarkar/vyom"><img alt="Vyom 0.2+" src="https://img.shields.io/badge/vyom-0.2%2B-89b4fa"></a>
+  <a href="https://github.com/Theyashsawarkar/vyom"><img alt="Vyom 0.6+" src="https://img.shields.io/badge/vyom-0.6%2B-89b4fa"></a>
   <img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11%2B-a6e3a1">
   <img alt="Wayland" src="https://img.shields.io/badge/wayland-layer--shell-94e2d5">
 </p>
@@ -53,9 +53,11 @@ doot is your phone, through KDE Connect for [Vyom](https://github.com/Theyashsaw
 
 ## Features
 
-- The phone's **battery, charging and mobile signal** at a glance.
-- Its actions as rows: send the clipboard, **send a recent file** (from Downloads, Pictures, Documents…), ring it to find it, ping it, browse its storage, unpair.
-- Pairing requests at the top with Accept / Reject and the verification key; other known devices below (pair the reachable ones).
+- **The phone at the top**: its battery as a ring, its name with a green "Connected", mobile signal as bars and a word, the network (5G, LTE…) and whether it's charging.
+- **Its actions as numbered tiles**: send the clipboard, **send a recent file** (from Downloads, Pictures, Documents…), ring it to find it, browse its storage, ping it. With the search box empty, a number (`1..5 (empty search)`) runs one; typing searches them, `Enter` runs the first.
+- **Unpair is red and apart**, and asks first: `Ctrl+U` once shows what it will do, a second time unpairs.
+- Pairing requests at the top with Accept / Reject and the verification key; other devices below, `Enter` pairs a reachable one.
+- No transfer list: KDE Connect doesn't publish its transfers' progress to other programs.
 - Keyboard first: every action has a key, shown in the footer; the mouse works too.
 - Never freezes the panel: slow commands run in the background.
 
@@ -63,7 +65,7 @@ doot is your phone, through KDE Connect for [Vyom](https://github.com/Theyashsaw
 
 ### Requirements
 
-- [Vyom](https://github.com/Theyashsawarkar/vyom) 0.2 or newer (Python 3.11+, PyGObject, GTK 4, [gtk4-layer-shell](https://github.com/wmww/gtk4-layer-shell), a Nerd Font)
+- [Vyom](https://github.com/Theyashsawarkar/vyom) 0.6 or newer (Python 3.11+, PyGObject, GTK 4, [gtk4-layer-shell](https://github.com/wmww/gtk4-layer-shell), a Nerd Font)
 - `kdeconnect-cli`, `busctl`
 - optional: wl-paste (send clipboard)
 - optional: yazi + kitty (browse)
@@ -97,6 +99,8 @@ Open it with `vyom doot` (or your key). Type to search; the footer always shows 
 |---|---|
 | `Enter` | Run the selected phone action (send, ring, browse...) |
 | `Backspace (empty search)` | Go back from the file list |
+| `1..5 (empty search)` | Run the phone action with that number (send clipboard, send a file, ring, browse, ping) |
+| `Ctrl+U` | Remove the pairing with the phone (unpair; press twice: asks first) |
 | `Esc` | Close the panel |
 
 Every Vyom panel also has `Up`/`Down` (or `Ctrl+K`/`Ctrl+J`) to move and `Page Up`/`Page Down` to jump. Each tool opens from its own key.

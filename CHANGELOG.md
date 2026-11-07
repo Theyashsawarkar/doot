@@ -2,7 +2,20 @@
 
 Newest first. Releases are tags (`vX.Y.Z`).
 
-## Unreleased
+## v0.2.0 -- 2026-11-07
+
+- **A new look** (Vyom 0.6): the phone at the top, its battery as a ring,
+  "Connected" in green, signal bars with a word, the network and charging.
+- **Actions as numbered tiles** (send clipboard, send a file, ring, browse,
+  ping): with the search box empty, `1`..`5` runs one; typing still searches
+  them.
+- **Unpair is red, apart, and asks first**: `Ctrl+U` (or its button) once
+  shows a red note, a second time within 5 seconds unpairs. It used to unpair
+  at once.
+- Other devices say "Enter pairs"; the preview pane is gone (everything it
+  showed is at the top now).
+- No transfer list: KDE Connect doesn't publish its transfers' progress.
+- Needs Vyom 0.6.0.
 
 - Every corner is rounded: the website's callouts.
 - A logo and a shloka at the top of the README and the website: every Vayu tool has them now.
