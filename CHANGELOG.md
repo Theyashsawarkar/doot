@@ -2,6 +2,24 @@
 
 Newest first. Releases are tags (`vX.Y.Z`).
 
+## v0.3.0 -- 2026-11-09
+
+- **Vim keys** (Vyom 0.7): doot opens in NORMAL mode, where letters are keys
+  and typing changes nothing; `/` (or `i`) types to search the phone's
+  actions, `Esc` goes back. `Space` is the leader, with a which-key strip;
+  `?` lists every key and `Space Space` is a palette of every action. Digits
+  aren't counts here: `1`..`5` still run the actions.
+- **New keys**: `Space x c` / `x f` send the clipboard / a file,
+  `Space n r` / `n p` ring / ping the phone, `Space o f` opens its storage,
+  `Space a a` / `d r` accept / reject a pairing request, `Space y b` copies the
+  battery level. In the file list `l` sends and `h` or `q` go back.
+- **Unpair asks with one question**: `Space d d` (or the Unpair button) asks
+  "Unpair …?", `y` unpairs and any other key keeps it. `Ctrl+U` no longer
+  unpairs: it scrolls half a page up, as in every vim tool.
+- Keys are data (`doot/vim.py`); `scripts/keybinds.py` writes the
+  `# keybind:` lines and the README table from it (`--check` in CI).
+- Needs Vyom 0.7.0.
+
 ## v0.2.0 -- 2026-11-07
 
 - **A new look** (Vyom 0.6): the phone at the top, its battery as a ring,

@@ -19,15 +19,31 @@ from gi.repository import Gtk
 from vyom import Hint, Row, Section, ui, util
 from vyom import Plugin as Base
 
-# keybind: Vyom/phone | Enter | Run the selected phone action (send, ring, browse...)
-# keybind: Vyom/phone | Backspace (empty search) | Go back from the file list
-# keybind: Vyom/phone | 1..5 (empty search) | Run the phone action with that number (send clipboard, send a file, ring, browse, ping)
-# keybind: Vyom/phone | Ctrl+U | Remove the pairing with the phone (unpair; press twice: asks first)
+from . import vim
+
+# KEYBINDS (generated from doot/vim.py by scripts/keybinds.py; don't edit by hand)
+# keybind: Vyom/phone:normal | 1 | Send this laptop's clipboard to the phone
+# keybind: Vyom/phone:normal | 2 | Send a file to the phone (pick it from the list)
+# keybind: Vyom/phone:normal | 3 | Play the phone's ringtone (find it)
+# keybind: Vyom/phone:normal | 4 | Open the phone's storage in a file manager
+# keybind: Vyom/phone:normal | 5 | Send a ping to the phone
+# keybind: Vyom/phone files:normal | l | Send the selected file to the phone
+# keybind: Vyom/phone files:normal | h | Go back to the phone
+# keybind: Vyom/phone files:normal | q | Go back to the phone (on the phone: close the panel)
+# keybind: Vyom/phone leader:normal | Space x c | Send this laptop's clipboard to the phone
+# keybind: Vyom/phone leader:normal | Space x f | Send a file to the phone (pick it from the list)
+# keybind: Vyom/phone leader:normal | Space n r | Play the phone's ringtone (find it)
+# keybind: Vyom/phone leader:normal | Space n p | Send a ping to the phone
+# keybind: Vyom/phone leader:normal | Space o f | Open the phone's storage in a file manager
+# keybind: Vyom/phone leader:normal | Space a a | Add the device that asks to pair (accept it; check the key on the phone)
+# keybind: Vyom/phone leader:normal | Space d r | Decline the waiting pairing request
+# keybind: Vyom/phone leader:normal | Space d d | Remove the pairing with the phone (y confirms)
+# keybind: Vyom/phone leader:normal | Space y b | Copy the phone's battery level
+# END KEYBINDS
 
 BUS = "org.kde.kdeconnect"
 DEV = "org.kde.kdeconnect.device"
 RECENT_DIRS = ["Downloads", "Desktop", "Pictures", "Documents", "Videos", "Music"]
-ARM_SECONDS = 5     # a second Ctrl+U within this unpairs
 # The phone's actions, numbered in this order: (key, title, what it does, icon, colour)
 ACTIONS = [("clipboard", "Send clipboard", "puts this laptop's clipboard on the phone", "\U000f014c", "teal"),
            ("files", "Send a file", "from Downloads, Pictures, Documents…", "\U000f0552", "mauve"),
@@ -81,7 +97,12 @@ class Plugin(Base):
     name, title, icon, color = "doot", "Phone", "\U000f011c", "green"
     placeholder = "Phone actions…"
     live = 5
-    hints = [Hint("1..5", "action"), Hint("Enter", "run"), Hint("Ctrl+U", "unpair"), Hint("Backspace", "back (files)")]
+    hints = [Hint("1..5", "action"), Hint("Enter", "run"), Hint("Space d d", "unpair")]
+    file_hints = [Hint("Enter", "send"), Hint("h", "back")]
+    modal = True                # vim keys (Vyom 0.7): NORMAL first, / searches the actions
+    start_mode = "normal"
+    vim_counts = False          # 1..5 are the phone's actions
+    key_groups = vim.GROUPS
     empty_text = "No other devices nearby. Type to search the phone's actions."
 
     def __init__(self, vyom, conf):
@@ -91,12 +112,11 @@ class Plugin(Base):
         self.phone = None        # the paired, reachable phone (search() finds it)
         self.state = {}
         self.running = True      # KDE Connect's daemon
-        self.armed = 0.0         # Ctrl+U once: unpair asks; a second time unpairs
+        self.requests = []       # devices asking to pair (search() finds them)
 
     def opened(self, args):
         super().opened(args)
         self.view = "main"
-        self.armed = 0.0
 
     def phone_state(self, d):
         s = {"charge": prop(d, "charge", f"{DEV}.battery", "/battery"),
@@ -114,6 +134,7 @@ class Plugin(Base):
             return [Row("KDE Connect isn't running", "Enter starts it", icon="\U000f011c", color="red",
                         data={"kind": "start"})]
         devs = devices()
+        self.requests = [d for d in devs if d["request"]]
         rows = []
         for d in devs:
             if d["request"]:
@@ -157,7 +178,7 @@ class Plugin(Base):
             if p.is_dir():
                 files += [f for f in p.iterdir() if f.is_file() and not f.name.startswith(".")]
         files = sorted(set(files), key=lambda f: f.stat().st_mtime, reverse=True)[:60]
-        rows = [Section(f"Send to {self.target['name']}", note="Backspace goes back")]
+        rows = [Section(f"Send to {self.target['name']}", note="h goes back")]
         for f in files:
             if q and util.fuzzy(q, f.name) is None:
                 continue
@@ -206,9 +227,7 @@ class Plugin(Base):
                       chips, spacing=7)
         txt.set_hexpand(True)
         txt.set_valign(Gtk.Align.CENTER)
-        armed = time.time() - self.armed < ARM_SECONDS
-        unpair = ui.button(f"Unpair {d['name']}?" if armed else "Unpair", self.unpair, "danger", "\U000f0337",
-                           "Ctrl+U again" if armed else "Ctrl+U")
+        unpair = ui.button("Unpair", self.unpair, "danger", "\U000f0337", "Space d d")
         unpair.set_valign(Gtk.Align.CENTER)
         hero = ui.hero(ring, txt, unpair, color="green")
         if self.view == "files":
@@ -226,10 +245,7 @@ class Plugin(Base):
             b.set_tooltip_text(f"{_sub} ({n + 1})")
             b.connect("clicked", lambda _b, k=key: self.run_action(k))
             grid.attach(b, n, 0, 1, 1)
-        box = ui.vbox(hero, ui.section("Do", note="a number runs it"), grid, spacing=8)
-        if armed:
-            box.append(ui.notice(f"Unpair {d['name']}?", "Ctrl+U again forgets it; pairing again needs the phone.", "red"))
-        return box
+        return ui.vbox(hero, ui.section("Do", note="a number runs it"), grid, spacing=8)
 
     def run_action(self, key):
         if self.phone is None:
@@ -238,19 +254,17 @@ class Plugin(Base):
             self.close()
 
     def unpair(self):
+        """Asks first (y unpairs, any other key keeps it): pairing again needs the phone."""
         d = self.phone
         if d is None:
+            self.set_status("no phone connected", "bad")
             return
-        if time.time() - self.armed < ARM_SECONDS:
-            self.armed = 0.0
+
+        def go():
             cli("-d", d["id"], "--unpair")
             self.done(True, f"Unpaired {d['name']}", "")
             self.refresh()
-            return
-        self.armed = time.time()
-        self.set_status(f"Ctrl+U again unpairs {d['name']}")
-        if self.panel:
-            self.panel.refresh_strip()
+        self.confirm(f"Unpair {d['name']}? Pairing again needs the phone.", go)
 
     # ------------------------------------------------------------ actions
     def done(self, ok, msg_ok, msg_fail):
@@ -265,6 +279,7 @@ class Plugin(Base):
         if kind == "files":
             self.target, self.view = dev, "files"
             self.panel.entry.set_text("")
+            self.panel.refresh_hints()
             self.refresh()
             return False
         if kind == "send":
@@ -337,17 +352,58 @@ class Plugin(Base):
         else:
             util.spawn(["xdg-open", target])
 
+    # ------------------------------------------------------------ vim keys
+    def keys(self, tab):
+        return vim.keys(self.view)
+
+    def tab_hints(self):
+        return self.file_hints if self.view == "files" else self.hints
+
+    def escape(self):
+        if self.view == "files" and not (self.panel and self.panel.query()):
+            self.v_back(1, "")
+            return True
+        return False
+
+    def v_back(self, _n, _a):
+        if self.view != "files":
+            self.close()
+            return
+        self.view = "main"
+        if self.panel:
+            self.panel.entry.set_text("")
+            self.panel.refresh_hints()
+        self.refresh()
+
+    def v_act(self, _n, key):
+        if self.phone is None:
+            self.set_status("no phone connected", "bad")
+            return
+        self.run_action(key)
+        if self.panel:
+            self.panel.refresh_hints()
+
+    def v_pairing(self, _n, what):
+        if not self.requests:
+            self.set_status("no device is asking to pair", "bad")
+            return
+        self.activate(Row("", data={"kind": what, "dev": self.requests[0]}), set())
+
+    def v_unpair(self, _n, _a):
+        self.unpair()
+
+    def v_copy(self, _n, _what):
+        charge = self.state.get("charge")
+        if self.phone is None or not isinstance(charge, int) or charge < 0:
+            self.set_status("no battery level to copy", "bad")
+            return
+        text = f"{self.phone['name']}: {charge}%" + (" (charging)" if self.state.get("charging") else "")
+        util.copy(text)
+        self.set_status(f"copied {text}", "ok")
+
     def key(self, name, row, mods):
-        empty = self.panel is not None and not self.panel.query()
-        if self.view == "files" and name in ("BackSpace", "Escape") and empty:
-            self.view = "main"
-            self.refresh()
-            return True
-        if self.view == "main" and empty and not mods and len(name) == 1 and name.isdigit() \
-                and 1 <= int(name) <= len(ACTIONS) and self.phone is not None:
-            self.run_action(ACTIONS[int(name) - 1][0])
-            return True
-        if mods == {"ctrl"} and name == "u" and self.phone is not None:
-            self.unpair()
+        # Backspace in an empty search goes back from the file list, in both modes.
+        if self.view == "files" and name == "BackSpace" and self.panel is not None and not self.panel.query():
+            self.v_back(1, "")
             return True
         return False
