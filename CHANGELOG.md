@@ -2,6 +2,11 @@
 
 Newest first. Releases are tags (`vX.Y.Z`).
 
+## Unreleased
+
+- **Spatial look**: the action tiles are borderless glass with 20 px corners.
+- The website has Vayu's Spatial look: graphite glass, a floating navigation bar, near-white for links and the main button, and the tool's own colour only as its signature (the logo's glow, the shloka's line, the release dots). No more all-caps labels.
+
 ## v0.3.0 -- 2026-11-09
 
 - **Vim keys** (Vyom 0.7): doot opens in NORMAL mode, where letters are keys
