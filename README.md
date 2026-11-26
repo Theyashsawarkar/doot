@@ -32,7 +32,7 @@
 <!-- No screenshot: phone shows personal data (your own phone). -->
 
 <p align="center">
-  <img alt="doot: the paired phone's actions (send clipboard, send a file, ring, browse, ping, unpair), its battery and network, and a tablet ready to pair" src="assets/screenshots/doot.png" width="100%">
+  <img alt="doot: the paired phone's actions (send clipboard, send a file, ring, browse, ping, unpair), its battery and network, and a tablet ready to pair" src="assets/screenshots/doot.webp" width="100%">
 </p>
 <p align="center"><sub>Screenshots use a made-up demo phone.</sub></p>
 
